@@ -1,0 +1,26 @@
+name: s3-deploy
+
+on:
+  push:
+    branches: [master]
+    
+jobs:
+  
+  build:
+  
+    runs-on: ubuntu-latest
+  
+    steps:
+  
+      - uses : actions/checksout@v3
+      - name : Configure AWS Credentials
+        uses : aws-actions/configure-aws-credentials@v1
+        with :
+          aws-access-key-id: ${{ secret.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key-id: ${{ secret.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secret.AWS_REGION }}
+      - name: Build React App
+        run: npm i && npm run build
+      - name: Deploy app build to s3 bucket
+        run: aws sync ./build s3://inpractice/
+      
